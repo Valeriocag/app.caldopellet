@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>CaldoPellet – Ordina a domicilio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="theme-color" content="#f3831f">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fff7ee;
+      color: #2b241e;
+    }
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 24px;
+      color: #f3831f;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #6b6058;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+    .options-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .option-pill {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 2px solid #f1d1aa;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .option-pill input {
+      margin-right: 8px;
+    }
+    .option-pill span.price {
+      font-weight: 600;
+      color: #2b241e;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d2c3b7;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      background: #f3831f;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .note {
+      font-size: 11px;
+      color: #8a7a6e;
+      margin-top: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">CaldoPellet</div>
+    <div class="subtitle">Consegna sacchi di pellet nel weekend, a domicilio.</div>
+  </header>
+
+  <section class="card">
+    <h2>1. Scegli la quantità</h2>
+    <div class="options-row">
+      <label class="option-pill">
+        <span><input type="radio" name="quantita" value="1 sacco – 6€">1 sacco</span>
+        <span class="price">6€</span>
+      </label>
+      <label class="option-pill">
+        <span><input type="radio" name="quantita" value="10 sacchi – 58€">10 sacchi (Starter)</span>
+        <span class="price">58€</span>
+      </label>
+      <label class="option-pill">
+        <span><input type="radio" name="quantita" value="20 sacchi – 110€">20 sacchi (Famiglia)</span>
+        <span class="price">110€</span>
+      </label>
+      <label class="option-pill">
+        <span><input type="radio" name="quantita" value="30 sacchi – 160€">30 sacchi (Scorta)</span>
+        <span class="price">160€</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Servizi extra (opzionali)</h2>
+    <label class="checkbox-row"><input type="checkbox" id="express"><strong>CaldoExpress</strong> – consegna prioritaria</label>
+    <label class="checkbox-row"><input type="checkbox" id="zerostress"><strong>CaldoZeroStress</strong> – porto i sacchi dove vuoi tu</label>
+    <label class="checkbox-row"><input type="checkbox" id="vicino"><strong>CaldoVicino</strong> – residenti entro 5 km</label>
+  </section>
+
+  <section class="card">
+    <h2>3. I tuoi dati</h2>
+    <label>Nome e cognome<input type="text" id="nome" placeholder="Es. Mario Rossi"></label>
+    <label>Indirizzo e numero civico<input type="text" id="indirizzo" placeholder="Via, numero"></label>
+    <label>Comune<input type="text" id="comune" placeholder="Comune (es. Saltrio)"></label>
+  </section>
+
+  <section class="card">
+    <h2>4. Note consegna</h2>
+    <textarea id="note" placeholder="Es. scarico in garage, cancello stretto, ecc."></textarea>
+  </section>
+
+  <button class="btn-primary" onclick="inviaOrdineWhatsApp()">Invia ordine su WhatsApp</button>
+
+  <div class="note">
+    Ordini entro giovedì sera = consegna nel weekend.<br>
+    Numero ordini: +39 379 106 0441
+  </div>
+</div>
+
+<script>
+  function inviaOrdineWhatsApp() {
+    const quantita = document.querySelector('input[name="quantita"]:checked');
+    if (!quantita) { alert("Seleziona una quantità di sacchi."); return; }
+
+    const servizi = [];
+    if (document.getElementById('express').checked) servizi.push("CaldoExpress");
+    if (document.getElementById('zerostress').checked) servizi.push("CaldoZeroStress");
+    if (document.getElementById('vicino').checked) servizi.push("CaldoVicino");
+
+    const nome = document.getElementById('nome').value.trim();
+    const indirizzo = document.getElementById('indirizzo').value.trim();
+    const comune = document.getElementById('comune').value.trim();
+    const note = document.getElementById('note').value.trim();
+
+    if (!nome || !indirizzo || !comune) {
+      alert("Compila nome, indirizzo e comune.");
+      return;
+    }
+
+    let msg = "Ordine CaldoPellet%0A%0A";
+    msg += "Quantità: " + encodeURIComponent(quantita.value) + "%0A";
+    if (servizi.length > 0) msg += "Servizi: " + encodeURIComponent(servizi.join(", ")) + "%0A";
+
+    msg += "%0ACliente: " + encodeURIComponent(nome) + "%0A";
+    msg += "Indirizzo: " + encodeURIComponent(indirizzo) + "%0A";
+    msg += "Comune: " + encodeURIComponent(comune) + "%0A";
+    if (note) msg += "%0ANote: " + encodeURIComponent(note) + "%0A";
+    msg += "%0APreferenza: prossimo weekend";
+
+    const phone = "393791060441";
+    const url = "https://wa.me/" + phone + "?text=" + msg;
+    window.location.href = url;
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js');
+    });
+  }
+</script>
+
+</body>
+</html>
